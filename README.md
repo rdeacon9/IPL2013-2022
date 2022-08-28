@@ -1,5 +1,5 @@
 I decided for my Data Analysis course that I had done through the University of College Dublin, I would analyze the Indian Premier League. I'm a big sport guy, and a
-big fan of the IPL. The data source I wanted to analyze, was the auction data for the teams. It was for the last 10 editions, 2013 to 2022.  
+big fan of the IPL. The data source I wanted to analyze, was the auction data for the teams over the last 10 editions, 2013 to 2022.  
 
 I found the data on Kaggle (kaggle.com/datasets). During the course I was exposed to Pandas, Matlib and Seaborn, learning how to manipulate data and vizualize it. 
 
