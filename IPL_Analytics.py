@@ -1,24 +1,19 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from sqlalchemy import create_engine
-import urllib
 import seaborn as sns
 import time
 from sklearn.linear_model import LinearRegression
+import textwrap
 
-raw_data = pd.read_csv(r"C:\Users\Ryan\Documents\GitHub\UCDPA_ryan.deacon9-gmail.com\IPLPlayerAuctionData.csv")
+raw_data = pd.read_csv(r"C:\Users\Ryan\Documents\GitHub\IPL2013-2022\IPLPlayerAuctionData.csv")
+standings = pd.ExcelFile(r"C:\Users\Ryan\Documents\GitHub\IPL2013-2022\table export.xlsx")
 
-standings = pd.ExcelFile(r"C:\Users\Ryan\Documents\UCD Data Analysis Course\table export.xlsx")
-
-#Stack overflow - https://stackoverflow.com/questions/517970/how-to-clear-the-interpreter-console#:~:text=You%20can%20do%20class%20cls%20and%20then%20cls%3Dcls()%20. 
 def clear_console():
     clear = ("\n" * 100)
     print(clear)
     print(clear)
 
-#https://medium.com/dunder-data/automatically-wrap-graph-labels-in-matplotlib-and-seaborn-a48740bc9ce
-import textwrap
 def wrap_labels(ax, width, break_long_words=False):
     labels = []
     for label in ax.get_xticklabels():
@@ -239,6 +234,8 @@ def display_standings():
             team_hold = df_name.query(f"team_name == '{user_input}'")
             team_id = team_hold['team_id']
             print(team_id)
+            team_id = team_id[0,1]
+            print(team_id)
             default_year_list = np.unique(np_data_year_all)
             default_values = [0,0,0,0,0,0,0,0,0,0]
             default_dic = {'0': default_values}
@@ -246,7 +243,6 @@ def display_standings():
             for y in range(2013,2023):
                 temp = pd.read_excel(standings, sheet_name='standings_'+str(y))
                 print(temp)
-                #try:
                 temp_hold = temp.query(f"team_id == '{team_id}'")
                 default_df.at[y,'0'] = temp_hold
             data_pos = default_df
