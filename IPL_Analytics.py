@@ -282,6 +282,12 @@ def spending_vs_position_t(user_input,pos_data):
         pos_data = pd.DataFrame(pos_data)
         print(pos_data)
         try: 
+            pos_data['Position'] = pos_data['Position'].astype(int)
+        except ValueError:
+            pos_data['Position'] = pos_data['Position'].fillna(10)
+            pos_data['Position'] = pos_data['Position'].astype(int)
+        print(pos_data)
+        try: 
             data_display = pd.DataFrame(pos_data.compare(team, keep_shape=True,keep_equal=True))
             data_display.rename(columns = {'Year': 'Year', 'self':'Position','other':'Spending'}, inplace = True)
         except ValueError:
@@ -298,13 +304,8 @@ def spending_vs_position_t(user_input,pos_data):
             else:
                 data_display['Spending'] = team.iloc[:,0]
         print(data_display)
-        try: 
-            data_display['Position'] = data_display['Position'].astype(int)
-            data_display['Spending'] = data_display['Spending'].astype(float)
-        except ValueError:
-            data_display['Position'] = data_display['Position'].fillna(10)
-            data_display['Position'] = data_display['Position'].astype(int)
-       
+        
+        data_display['Spending'] = data_display['Spending'].astype(float)
         print(data_display)
         ax1 = sns.lineplot(x=data_display.index,y='Position',data=data_display,color='red',markers=True)
         ax1.set_ylabel('Final log position')
