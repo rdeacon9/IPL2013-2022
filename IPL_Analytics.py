@@ -240,10 +240,10 @@ def display_standings():
                 try:
                     temp_hold = temp.query("team_id == "+ str(team_id1))
                     team_pos = int(temp_hold.loc[:,'position'])
-                    default_df.loc[y,'Pos'] = int(team_pos)
+                    default_df.loc[y,'Position'] = int(team_pos)
                 except:
                     team_pos = 'NaN'
-                    default_df.loc[y,'Pos'] = team_pos            
+                    default_df.loc[y,'Position'] = team_pos            
             print(default_df)
             print('')
             spending_vs_position_t(user_input.title(),default_df)
@@ -281,9 +281,30 @@ def spending_vs_position_t(user_input,pos_data):
         team = pd.DataFrame(team)
         pos_data = pd.DataFrame(pos_data)
         print(pos_data)
-        print(team)
-        data_display = team.merge(pos_data, left_index=True, right_index=True)
-        data_display = pd.DataFrame(data_display)
+        try: 
+            data_display = pd.DataFrame(pos_data.compare(team, keep_shape=True,keep_equal=True))
+            data_display.rename(columns = {'Year': 'Year', 'self':'Position','other':'Spending'}, inplace = True)
+        except ValueError:
+            if pos_data.equals(team) == False:
+                default_year_list = np.unique(np_data_year_all)
+                data_display = pd.DataFrame(index=default_year_list)
+            if 'Position' in pos_data.columns:
+                data_display['Position'] = pos_data.iloc[:,0]
+                print(data_display)
+            else:
+                data_display['Position'] = pos_data['Position']
+            if '' in team.columns:
+                data_display['Spending'] = team['']
+            else:
+                data_display['Spending'] = team.iloc[:,0]
+        print(data_display)
+        try: 
+            data_display['Position'] = data_display['Position'].astype(int)
+            data_display['Spending'] = data_display['Spending'].astype(float)
+        except ValueError:
+            data_display['Position'] = data_display['Position'].fillna(10)
+            data_display['Position'] = data_display['Position'].astype(int)
+       
         print(data_display)
         ax1 = sns.lineplot(x=data_display.index,y='Position',data=data_display,color='red',markers=True)
         ax1.set_ylabel('Final log position')
