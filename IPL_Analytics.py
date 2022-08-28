@@ -232,24 +232,21 @@ def display_standings():
         if user_input in team_list:
             df_name = pd.read_excel(standings, sheet_name='details_of_teams')
             team_hold = df_name.query(f"team_name == '{user_input}'")
-            team_id = team_hold['team_id']
-            print(team_id)
-            team_id = team_id[0,1]
-            print(team_id)
-            default_year_list = np.unique(np_data_year_all)
-            default_values = [0,0,0,0,0,0,0,0,0,0]
-            default_dic = {'0': default_values}
-            default_df = pd.DataFrame(default_dic,index=default_year_list)
+            team_id = pd.DataFrame(team_hold['team_id'])
+            team_id1 = int(team_id.loc[:,'team_id'])
+            default_df = pd.DataFrame([])
             for y in range(2013,2023):
                 temp = pd.read_excel(standings, sheet_name='standings_'+str(y))
-                print(temp)
-                temp_hold = temp.query(f"team_id == '{team_id}'")
-                default_df.at[y,'0'] = temp_hold
-            data_pos = default_df
-                    
-            print(data_pos)
+                try:
+                    temp_hold = temp.query("team_id == "+ str(team_id1))
+                    team_pos = int(temp_hold.loc[:,'position'])
+                    default_df.loc[y,'Pos'] = int(team_pos)
+                except:
+                    team_pos = 'NaN'
+                    default_df.loc[y,'Pos'] = team_pos            
+            print(default_df)
             print('')
-            spending_vs_position_t(user_input.title(),data_pos)
+            spending_vs_position_t(user_input.title(),default_df)
             menu()
         else:
             print('Team not in list')
@@ -283,28 +280,11 @@ def spending_vs_position_t(user_input,pos_data):
         team = check_if_all_year(team)
         team = pd.DataFrame(team)
         pos_data = pd.DataFrame(pos_data)
-        try: 
-            data_display = pd.DataFrame(pos_data.compare(team, keep_shape=True,keep_equal=True))
-            data_display.rename(columns = {'Year': 'Year', 'self':'Position','other':'Spending'}, inplace = True)
-        except ValueError:
-            if pos_data.equals(team) == False:
-                default_year_list = np.unique(np_data_year_all)
-                data_display = pd.DataFrame(index=default_year_list)
-            if 'Position' in pos_data.columns:
-                data_display['Position'] = pos_data['Position']
-            else:
-                data_display['Position'] = pos_data.iloc[:,0]
-            if '' in team.columns:
-                data_display['Spending'] = team['']
-            else:
-                data_display['Spending'] = team.iloc[:,0]
+        print(pos_data)
+        print(team)
+        data_display = team.merge(pos_data, left_index=True, right_index=True)
         data_display = pd.DataFrame(data_display)
-        try: 
-            data_display['Position'] = data_display['Position'].astype(int)
-            data_display['Spending'] = data_display['Spending'].astype(float)
-        except ValueError:
-            data_display['Position'] = data_display['Position'].fillna(10)
-            data_display['Position'] = data_display['Position'].astype(int)
+        print(data_display)
         ax1 = sns.lineplot(x=data_display.index,y='Position',data=data_display,color='red',markers=True)
         ax1.set_ylabel('Final log position')
         ax1.legend(['Team Position'], loc="upper left") 
