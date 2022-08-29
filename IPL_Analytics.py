@@ -241,9 +241,15 @@ def display_standings():
                     temp_hold = temp.query("team_id == "+ str(team_id1))
                     team_pos = int(temp_hold.loc[:,'position'])
                     default_df.loc[y,'Position'] = int(team_pos)
-                except:
-                    team_pos = 'NaN'
-                    default_df.loc[y,'Position'] = team_pos            
+                except ValueError:
+                    team_pos = ''
+                    default_df.loc[y,'Position'] = team_pos
+            try:
+                default_df['Position'] = default_df['Position'].astype(str).apply(lambda x: x.replace('.0', ''))
+                default_df['Position'] = default_df['Position'].astype(int)
+            except ValueError:
+                default_df['Position'] = default_df['Position'].fillna(10)
+                default_df['Position'] = default_df['Position'].astype(int)        
             print(default_df)
             print('')
             spending_vs_position_t(user_input.title(),default_df)
@@ -277,42 +283,20 @@ def spending_vs_position_t(user_input,pos_data):
     if input('Display spending vs final log position? ').lower() == 'y':
         team = raw_data[raw_data['Team']==user_input][['EURO Value','Year']]
         team = team.groupby('Year')['EURO Value'].sum()
-        team = check_if_all_year(team)
         team = pd.DataFrame(team)
+        print(team)
         pos_data = pd.DataFrame(pos_data)
         print(pos_data)
-        try: 
-            pos_data['Position'] = pos_data['Position'].astype(int)
-        except ValueError:
-            pos_data['Position'] = pos_data['Position'].fillna(10)
-            pos_data['Position'] = pos_data['Position'].astype(int)
-        print(pos_data)
-        try: 
-            data_display = pd.DataFrame(pos_data.compare(team, keep_shape=True,keep_equal=True))
-            data_display.rename(columns = {'Year': 'Year', 'self':'Position','other':'Spending'}, inplace = True)
-        except ValueError:
-            if pos_data.equals(team) == False:
-                default_year_list = np.unique(np_data_year_all)
-                data_display = pd.DataFrame(index=default_year_list)
-            if 'Position' in pos_data.columns:
-                data_display['Position'] = pos_data.iloc[:,0]
-                print(data_display)
-            else:
-                data_display['Position'] = pos_data['Position']
-            if '' in team.columns:
-                data_display['Spending'] = team['']
-            else:
-                data_display['Spending'] = team.iloc[:,0]
-        print(data_display)
-        
-        data_display['Spending'] = data_display['Spending'].astype(float)
+        team.index = team.index.astype("int")
+        pos_data.index = pos_data.index.astype("int")
+        data_display = team.merge(pos_data, left_index=True, right_index=True)
         print(data_display)
         ax1 = sns.lineplot(x=data_display.index,y='Position',data=data_display,color='red',markers=True)
         ax1.set_ylabel('Final log position')
         ax1.legend(['Team Position'], loc="upper left") 
         ax1.set_ylim(10,1)      
         ax2 = ax1.twinx()
-        sns.barplot(x=data_display.index,y='Spending',data=data_display,alpha=0.5,color='blue',ax=ax2)
+        sns.barplot(x=data_display.index,y='EURO Value',data=data_display,alpha=0.5,color='blue',ax=ax2)
         ax2.grid(visible=False)
         ax2.set_ylabel('Spent in millions')
         ax2.legend(['Team Spending'], loc="upper right")
