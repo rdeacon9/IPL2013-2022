@@ -237,13 +237,15 @@ def display_standings():
             default_df = pd.DataFrame([])
             for y in range(2013,2023):
                 temp = pd.read_excel(standings, sheet_name='standings_'+str(y))
-                try:
-                    temp_hold = temp.query("team_id == "+ str(team_id1))
+                temp_hold = temp.query("team_id == "+ str(team_id1))
+                if temp_hold.empty:
+                    default_df.loc[y,'Position'] = ''
+                    
+                else:
                     team_pos = int(temp_hold.loc[:,'position'])
-                    default_df.loc[y,'Position'] = int(team_pos)
-                except ValueError:
-                    team_pos = ''
-                    default_df.loc[y,'Position'] = team_pos
+                    default_df.loc[y,'Position'] = int(team_pos)          
+            default_df = pd.DataFrame(default_df)
+            print(default_df)
             try:
                 default_df['Position'] = default_df['Position'].astype(str).apply(lambda x: x.replace('.0', ''))
                 default_df['Position'] = default_df['Position'].astype(int)
