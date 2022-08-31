@@ -11,7 +11,7 @@ The SQL server contained a database of 11 tables, each table had the standings f
 The tables would show the team id, their position, how many games they won, lost, tied and the no results (rained out). 
 I unfortunately couldn't include the SQL version as my trial expired and as a result I had to change my code to include a second Excel file. 
 
-The Excel file has 11 sheets, the same as the SQL server. 10 standings tables and one identifier sheet.  
+The Excel file has 11 sheets, the same as the SQL server. 10 standing sheets and one identifier sheet.  
 
 I really enjoyed applying everything I learned. The best learning was running into a problem or piece of code that didn't do what I had expected and Googling to find a
 solution. 
