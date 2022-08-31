@@ -246,15 +246,14 @@ def display_standings():
                     default_df.loc[y,'Position'] = int(team_pos)          
             default_df = pd.DataFrame(default_df)
             print(default_df)
+            
+            default_df.replace(r'\s+', np.nan, regex=True)
             try:
-                default_df.replace(r'\s+', np.nan, regex=True)
-            except:
-                try:
-                    default_df['Position'] = default_df['Position'].astype(str).apply(lambda x: x.replace('.0', ''))
-                    default_df['Position'] = default_df['Position'].astype(int)
-                except ValueError:
-                    default_df['Position'] = default_df['Position'].fillna(10)
-                    default_df['Position'] = default_df['Position'].astype(int)        
+                default_df['Position'] = default_df['Position'].astype(str).apply(lambda x: x.replace('.0', ''))
+                default_df['Position'] = default_df['Position'].astype(int)
+            except ValueError:
+                default_df['Position'] = default_df['Position'].fillna(10)
+                default_df['Position'] = default_df['Position'].astype(int)        
             print(default_df)
             print('')
             spending_vs_position_t(user_input.title(),default_df)
